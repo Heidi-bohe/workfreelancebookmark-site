@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自由职业工具导航</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f5f5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 15px;
+    }
+    header {
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .navbar {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .logo {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #3B82F6;
+      text-decoration: none;
+      text-align: center;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .nav-links a {
+      margin-left: 1rem;
+      margin-bottom: 0.5rem;
+      color: #666;
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .nav-links a:hover {
+      color: #3B82F6;
+    }
+    .main {
+      padding: 2rem 0;
+    }
+    .search-bar {
+      margin-bottom: 1.5rem;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    h1 {
+      font-size: 1.75rem;
+      margin-bottom: 1rem;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+    .tool-card {
+      background-color: white;
+      border-radius: 4px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .tool-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    .tool-card p {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    .tool-card a {
+      color: #3B82F6;
+      text-decoration: none;
+    }
+    .tool-card a:hover {
+      text-decoration: underline;
+    }
+    /* 黑暗模式切换按钮 */
+    .theme-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #3B82F6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      border: none;
+    }
+    /* 黑暗模式样式 */
+    .dark-mode {
+      background-color: #1a1a1a;
+      color: #f5f5f5;
+    }
+    .dark-mode header {
+      background-color: #2d2d2d;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .dark-mode .logo {
+      color: #60a5fa;
+    }
+    .dark-mode .nav-links a {
+      color: #ccc;
+    }
+    .dark-mode .nav-links a:hover {
+      color: #60a5fa;
+    }
+    .dark-mode .tool-card {
+      background-color: #2d2d2d;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .dark-mode .tool-card p {
+      color: #bbb;
+    }
+    .dark-mode .tool-card a {
+      color: #60a5fa;
+    }
+    .dark-mode .search-bar input {
+      background-color: #333;
+      color: #f5f5f5;
+      border-color: #444;
+    }
+    @media (max-width: 768px) {
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+      .nav-links {
+        flex-wrap: wrap;
+      }
+    }
+    /* 下拉菜单样式 */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #fff;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 101;
+      border-radius: 4px;
+    }
+    .dropdown-content a {
+      color: #666;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      margin: 0;
+    }
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    /* 暗色模式下拉菜单 */
+    .dark-mode .dropdown-content {
+      background-color: #2d2d2d;
+    }
+    .dark-mode .dropdown-content a:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="navbar">
+        <a href="#" class="logo">自由职业工具导航</a>
+        <div class="nav-links">
+          <a href="#freelance" onclick="filterTools('global')">自由职业平台</a>
+          <div class="dropdown">
+            <a href="#continents">七大洲平台</a>
+            <div class="dropdown-content">
+              <a href="#asia" onclick="filterTools('asia')">亚洲平台</a>
+              <a href="#europe" onclick="filterTools('europe')">欧洲平台</a>
+              <a href="#americas" onclick="filterTools('americas')">北美平台</a>
+              <a href="#south-america" onclick="filterTools('south-america')">南美洲平台</a>
+              <a href="#africa" onclick="filterTools('africa')">非洲平台</a>
+              <a href="#oceania" onclick="filterTools('oceania')">大洋洲平台</a>
+              <a href="#antarctica" onclick="filterTools('antarctica')">南极洲平台</a>
+            </div>
+          </div>
+          <a href="#design" onclick="filterTools('design')">设计类</a>
+          <a href="#writing" onclick="filterTools('writing')">写作与内容创作</a>
+          <a href="#programming" onclick="filterTools('programming')">编程与技术</a>
+          <a href="#marketing" onclick="filterTools('marketing')">营销与社交媒体</a>
+          <a href="#education" onclick="filterTools('education')">教育与辅导</a>
+          <a href="#worktravel" onclick="filterTools('worktravel')">出国打工换宿</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container main">
+    <div class="search-bar">
+      <input type="text" placeholder="搜索工具..." id="search-input">
+    </div>
+
+    <h1 id="category-title">推荐工具</h1>
+    
+    <div class="tools-grid" id="tools-container">
+      <!-- 工具卡片将由 JavaScript 动态生成 -->
+    </div>
+  </div>
+  
+  <button class="theme-toggle" id="theme-toggle">
+    🌓
+  </button>
+
+  <script>
+    // 工具数据
+    const tools = [
+      // 自由职业平台
+      {
+        id: "upwork",
+        name: "Upwork",
+        category: "global",
+        description: "全球最大的自由职业者平台之一，提供软件开发、设计、写作、营销等多种职业机会。适合长期项目和短期接案。",
+        link: "https://www.upwork.com"
+      },
+      {
+        id: "fiverr",
+        name: "Fiverr",
+        category: "global",
+        description: "提供各种服务的平台，从简单的图形设计到复杂的编程任务，以\"gig\"形式提供服务。适合按项目收费的自由职业者。",
+        link: "https://www.fiverr.com"
+      },
+      {
+        id: "crossover",
+        name: "Crossover",
+        category: "global",
+        description: "专注于高薪远程工作机会，为全球顶尖人才提供长期稳定的工作。适合高技能专业人士。",
+        link: "https://www.crossover.com"
+      },
+      {
+        id: "flexjobs",
+        name: "FlexJobs",
+        category: "global",
+        description: "提供大量经过筛选的远程工作机会，覆盖多个行业和职位类型。适合寻找远程工作的自由职业者。",
+        link: "https://www.flexjobs.com"
+      },
+      
+      // 设计类
+      {
+        id: "99designs",
+        name: "99designs",
+        category: "design",
+        description: "专注于设计竞赛的平台，适合平面设计师、网页设计师等。",
+        link: "https://www.99designs.com"
+      },
+      {
+        id: "dribbble",
+        name: "Dribbble",
+        category: "design",
+        description: "设计师展示作品和寻找工作的平台。",
+        link: "https://dribbble.com"
+      },
+      
+      // 写作与内容创作类
+      {
+        id: "problogger",
+        name: "ProBlogger",
+        category: "writing",
+        description: "专注于博客写作和内容创作的工作机会。",
+        link: "https://problogger.com"
+      },
+      {
+        id: "contently",
+        name: "Contently",
+        category: "writing",
+        description: "连接内容创作者与品牌，提供高质量的写作机会。",
+        link: "https://contently.com"
+      },
+      
+      // 编程与技术类
+      {
+        id: "toptal",
+        name: "Toptal",
+        category: "programming",
+        description: "专注于高端技术人才，提供软件开发、设计等机会。",
+        link: "https://www.toptal.com"
+      },
+      {
+        id: "github-jobs",
+        name: "GitHub Jobs",
+        category: "programming",
+        description: "面向开发者的工作平台，提供远程和本地工作机会。",
+        link: "https://jobs.github.com"
+      },
+      
+      // 营销与社交媒体类
+      {
+        id: "hubstaff",
+        name: "Hubstaff Talent",
+        category: "marketing",
+        description: "提供远程营销、社交媒体管理等机会。",
+        link: "https://talent.hubstaff.com"
+      },
+      {
+        id: "social-media-examiner",
+        name: "Social Media Examiner",
+        category: "marketing",
+        description: "专注于社交媒体营销的工作机会。",
+        link: "https://www.socialmediaexaminer.com"
+      },
+      
+      // 教育与辅导类
+      {
+        id: "vipkid",
+        name: "VIPKid",
+        category: "education",
+        description: "在线英语教学平台，适合有教学经验的自由职业者。",
+        link: "https://www.vipkid.com"
+      },
+      {
+        id: "chegg",
+        name: "Chegg Tutors",
+        category: "education",
+        description: "提供在线辅导和答疑服务，适合教育工作者。",
+        link: "https://www.chegg.com/tutors"
+      },
+      
+      // 亚洲
+      {
+        id: "freelance-mile",
+        name: "Freelance Mile",
+        category: "asia",
+        description: "针对亚洲市场的自由职业平台，特别适合印度、巴基斯坦和菲律宾的自由职业者。",
+        link: "https://freelancemile.com"
+      },
+      {
+        id: "himalayas",
+        name: "Himalayas",
+        category: "asia",
+        description: "专注于亚洲市场的远程工作平台，提供灵活的工作机会。",
+        link: "https://himalayas.app"
+      },
+      
+      // 欧洲
+      {
+        id: "peopleperhour",
+        name: "Peopleperhour",
+        category: "europe",
+        description: "欧洲最大的自由职业者和小企业交易平台，适合欧洲本地自由职业者。",
+        link: "https://www.peopleperhour.com"
+      },
+      {
+        id: "toptal-eu",
+        name: "Toptal (欧洲)",
+        category: "europe",
+        description: "高端技术人才平台，适合欧洲的软件开发者和设计师。",
+        link: "https://www.toptal.com"
+      },
+      
+      // 美洲
+      {
+        id: "arc-dev",
+        name: "Arc.dev",
+        category: "americas",
+        description: "连接北美和拉丁美洲开发者与全球公司的平台，提供远程工作机会。",
+        link: "https://arc.dev"
+      },
+      {
+        id: "skuad",
+        name: "Skuad",
+        category: "americas",
+        description: "帮助美洲地区人才找到全球远程工作机会的平台。",
+        link: "https://www.skuad.io"
+      },
+      
+      // 非洲
+      {
+        id: "freelancermap",
+        name: "FreelancerMap",
+        category: "africa",
+        description: "连接非洲自由职业者与全球项目的平台，特别关注IT和数字技能领域。",
+        link: "https://www.freelancermap.com"
+      },
+      {
+        id: "remote-work-revolution",
+        name: "Remote Work Revolution",
+        category: "africa",
+        description: "为非洲新兴市场提供远程工作机会，帮助非洲人才参与全球工作市场。",
+        link: "https://www.linkedin.com/company/remote-work-revolution/"
+      },
+      
+      // 大洋洲
+      {
+        id: "freelancer-com",
+        name: "Freelancer.com",
+        category: "oceania",
+        description: "全球性自由职业平台，大洋洲地区活跃度高，提供多种工作机会。",
+        link: "https://www.freelancer.com"
+      },
+      {
+        id: "upwork-oceania",
+        name: "Upwork (大洋洲)",
+        category: "oceania",
+        description: "全球最大的自由职业平台之一，适合大洋洲的自由职业者。",
+        link: "https://www.upwork.com"
+      },
+      
+      // 南美洲
+      {
+        id: "workana",
+        name: "Workana",
+        category: "south-america",
+        description: "南美洲最受欢迎的自由职业平台，主要面向西班牙语和葡萄牙语地区。",
+        link: "https://www.workana.com"
+      },
+      {
+        id: "mercadolibre",
+        name: "MercadoLibre",
+        category: "south-america",
+        description: "拉丁美洲最大的电子商务平台，适合自由职业者和创业者。",
+        link: "https://mercadolibre.com"
+      },
+      // 南极洲
+      {
+        id: "southpole-research",
+        name: "南极科研支持",
+        category: "antarctica",
+        description: "为南极科研站提供远程支持的工作机会，包括数据分析、通信支持等，适合专业技术人员。",
+        link: "https://www.coolantarctica.com/Community/find_a_job_in_antarctica.php",
+        faIcon: "fas fa-snowflake"
+      },
+      {
+        id: "antarctica-digital",
+        name: "Antarctica Digital",
+        category: "antarctica",
+        description: "为南极科考团队提供数字服务的平台，包括网站维护、数据处理等远程工作。",
+        link: "https://www.antarctica.gov.au/jobs/",
+        faIcon: "fas fa-icicles"
+      },
+      
+      // 出国打工换宿
+      {
+        id: "helpx",
+        name: "Help X",
+        category: "worktravel",
+        description: "会费：欧元20。帮助需要帮助的人们与想要帮助的人们之间的文化交流，偏个人组织向，包含农场、家庭甚至NGO等项目。欧美家庭类项目较多，亚洲国家项目较少。",
+        link: "https://www.helpx.net/",
+        faIcon: "fas fa-hands-helping"
+      },
+      {
+        id: "worldpacker",
+        name: "Worldpacker",
+        category: "worktravel",
+        description: "会费：$49。旅行者通过技能换取免费住宿的服务平台，相对于其他平台，旅馆和企业所占比例较高。选择类型多样，有技能换取、NGO项目、生态项目等。",
+        link: "https://www.worldpackers.com/",
+        faIcon: "fas fa-luggage-cart"
+      },
+      {
+        id: "workaway",
+        name: "Workaway",
+        category: "worktravel",
+        description: "会费：$49（有couple选项，价格更高）。全球各地的宿主，从事不同职业，有酒店/民宿主人、农场主、需要照顾孩子的家庭等多种选择。",
+        link: "https://www.workaway.info/",
+        faIcon: "fas fa-suitcase"
+      },
+      {
+        id: "wwoof",
+        name: "WWoof",
+        category: "worktravel",
+        description: "会费：25磅。以农场工作为主，源于英国，目前在全世界50多个国家都有组织。适合想学习农场技巧，体验农村生活，喜欢有机农场的旅行者。",
+        link: "https://wwoof.net/",
+        faIcon: "fas fa-tractor"
+      },
+      {
+        id: "hippohelp",
+        name: "Hippohelp",
+        category: "worktravel",
+        description: "无会费。成立于2017年，宿主包括旅馆/建筑/农业/教学/瑜伽等，主要覆盖欧美国家和地区。提供多样化的换宿机会，平台免费注册，适合预算有限的旅行者。",
+        link: "https://hippohelp.com/",
+        faIcon: "fas fa-hippo"
+      },
+      {
+        id: "chinese-volunteer",
+        name: "国际中文教育志愿者",
+        category: "worktravel",
+        description: "需要提前报名+培训。中外语言交流合作中心提供的志愿者项目，为期1学年，会提供生活津贴，但开放日期固定，每年申请机会较少，适合想要GAP的伙伴。",
+        link: "http://www.chinese.cn/page/#/pcpage/mainpage",
+        faIcon: "fas fa-chalkboard-teacher"
+      }
+    ];
+    
+    // 分类数据
+    const categories = [
+      {
+        id: "global",
+        name: "自由职业平台"
+      },
+      {
+        id: "design",
+        name: "设计类"
+      },
+      {
+        id: "writing",
+        name: "写作与内容创作"
+      },
+      {
+        id: "programming",
+        name: "编程与技术"
+      },
+      {
+        id: "marketing",
+        name: "营销与社交媒体"
+      },
+      {
+        id: "education",
+        name: "教育与辅导"
+      },
+      {
+        id: "asia",
+        name: "亚洲平台"
+      },
+      {
+        id: "europe",
+        name: "欧洲平台"
+      },
+      {
+        id: "americas",
+        name: "北美平台"
+      },
+      {
+        id: "africa",
+        name: "非洲平台"
+      },
+      {
+        id: "oceania",
+        name: "大洋洲平台"
+      },
+      {
+        id: "south-america",
+        name: "南美洲平台"
+      },
+      {
+        id: "antarctica",
+        name: "南极洲平台"
+      },
+      {
+        id: "worktravel",
+        name: "出国打工换宿"
+      }
+    ];
+    
+    // 获取DOM元素
+    const toolsContainer = document.getElementById('tools-container');
+    const searchInput = document.getElementById('search-input');
+    const categoryTitle = document.getElementById('category-title');
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // 渲染工具卡片
+    function renderTools(toolsToRender) {
+      toolsContainer.innerHTML = '';
+      
+      toolsToRender.forEach(tool => {
+        const toolCard = document.createElement('div');
+        toolCard.className = 'tool-card';
+        toolCard.innerHTML = `
+          <h2>${tool.name}</h2>
+          <p>${tool.description}</p>
+          <a href="${tool.link}" target="_blank">访问官网</a>
+        `;
+        toolsContainer.appendChild(toolCard);
+      });
+      
+      if (toolsToRender.length === 0) {
+        toolsContainer.innerHTML = '<p>没有找到匹配的工具</p>';
+      }
+    }
+    
+    // 初始渲染所有工具
+    renderTools(tools);
+    
+    // 搜索功能
+    searchInput.addEventListener('input', function() {
+      const searchText = this.value.toLowerCase();
+      const filteredTools = tools.filter(tool => 
+        tool.name.toLowerCase().includes(searchText) || 
+        tool.description.toLowerCase().includes(searchText)
+      );
+      
+      renderTools(filteredTools);
+    });
+    
+    // 分类筛选
+    function filterTools(categoryId) {
+      const category = categories.find(cat => cat.id === categoryId);
+      
+      if (category) {
+        const filteredTools = tools.filter(tool => tool.category === categoryId);
+        categoryTitle.textContent = `${category.name} 工具`;
+        renderTools(filteredTools);
+      } else {
+        categoryTitle.textContent = '推荐工具';
+        renderTools(tools);
+      }
+    }
+    
+    // 黑暗模式切换
+    themeToggle.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+    });
+    
+    // 如果系统偏好为暗色模式，自动应用暗色主题
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
+</body>
+</html>
